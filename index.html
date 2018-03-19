@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>yc-assistant</title>
+    <!-- Path to Framework7 Library CSS -->
+    <link rel="stylesheet" href="static/css/framework7.min.css">
+    <link rel="stylesheet" href="static/css/framework7-icons.css">
+    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"> -->
+    <link rel="stylesheet" href="static/css/iconfont/material-icons.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- Status bar overlay for full screen mode (Cordova or PhoneGap) -->
+      <f7-statusbar></f7-statusbar>
+
+      <!-- Left Panel with "cover" effect -->
+      <f7-panel left reveal>
+        <f7-view>
+          <f7-page>
+            <f7-navbar v-bind:title="user"></f7-navbar>
+            <f7-list>
+              <f7-list-item title="事项" class="panel-close" link="/item/" view=".view-main"></f7-list-item>
+              <f7-list-item title="代理" class="panel-close" link="/user/" view=".view-main"></f7-list-item>
+             <!--  <f7-list-item title="项目" class="panel-close">
+                <router-link to="/item"></router-link>
+              </f7-list-item>
+              <f7-list-item title="代理" class="panel-close">
+                <router-link to="/user"></router-link>
+              </f7-list-item> -->
+            </f7-list>
+          </f7-page>
+        </f7-view>
+      </f7-panel>
+
+      <!-- <router-view></router-view> -->
+      <!-- Right Panel with "reveal" effect -->
+      <!-- <f7-panel right reveal>
+        <f7-view>
+          <f7-page>
+            <f7-navbar title="Right Panel"></f7-navbar>
+            <f7-block>
+              <p>Here comes the right panel text</p>
+            </f7-block>
+          </f7-page>
+        </f7-view>
+      </f7-panel> -->
+
+      <!-- Main view-->
+      <f7-view main>
+        <f7-page>
+          <f7-navbar title="沅初团队助手"></f7-navbar>
+          <!-- Page content -->
+
+          <f7-toolbar tabbar>
+            <f7-link tab-link="#manage-tab">数据化管理</f7-link>
+            <f7-link tab-link="#wastebook-tab">往来账目</f7-link>
+          </f7-toolbar>
+          <f7-tabs animated>
+            <f7-tab id="manage-tab" tab-active>
+              <div class="data-table data-table-init">
+                <f7-card-header>
+                  <!-- Table title -->
+                  <div class="data-table-title">{{ user }}</div>
+                  <!-- Table actions -->
+                  <div class="data-table-actions">
+                    <input type="date" name="wastebook-date" v-model="view_date">
+                    <a class="link icon-only">
+                      <i class="icon f7-icons ios-only">sort</i>
+                      <i class="icon material-icons md-only">sort</i>
+                    </a>
+                    <a class="link icon-only">
+                      <i class="icon f7-icons ios-only">more_vertical_round</i>
+                      <i class="icon material-icons md-only">more_vert</i>
+                    </a>
+                    <a class="link icon-only popup-open" data-popup="#action-popup" v-on:click="form_type = 'add'">
+                      <i class="icon f7-icons ios-only">add</i>
+                      <i class="icon material-icons md-only">add</i>
+                    </a>
+                  </div>
+                </f7-card-header>
+                <f7-card-content :padding="false">
+                  <table id="action-list" border="1" style="white-space: nowrap;">
+                    <thead>
+                      <tr>
+                        <th class="label-cell" width="100">项目</th>
+                        <th class="numeric-cell">周一</th>
+                        <th class="numeric-cell">周二</th>
+                        <th class="numeric-cell">周三</th>
+                        <th class="numeric-cell">周四</th>
+                        <th class="numeric-cell">周五</th>
+                        <th class="numeric-cell">周六</th>
+                        <th class="numeric-cell">周日</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(dates, id) in actions">
+                        <!-- <td>{{ action.id }}</td> -->
+                        <!-- <td>{{ id_user_mapping[action.user_id] }}</td> -->
+                        <td>
+                          {{ $store.state.id_item_mapping[id] }}
+                        </td>
+                        <td v-for="date in action_dates" v-if="dates[date]">
+                          {{ dates[date]["completion"] }}
+                          <a class="link icon-only popup-open" data-popup="#action-popup" v-on:click="form_type = 'update'; form_content=dates[date]">
+                            <i class="icon f7-icons ios-only">edit</i>
+                            <i class="icon material-icons md-only">edit</i>
+                          </a>
+                          <a :db-id="dates[date].id" class="link icon-only" v-on:click="deleteOneAction">
+                            <i class="icon f7-icons ios-only">delete</i>
+                            <i class="icon material-icons md-only">delete</i>
+                          </a>
+                        </td>
+                        <td v-else>-</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </f7-card-content>
+              </div>
+
+            </f7-tab>
+            <f7-tab id="wastebook-tab">
+              <waste-book></waste-book>
+            </f7-tab>
+          </f7-tabs>
+
+          <!-- <f7-block>
+            <p>Here comes main view page text</p>
+          </f7-block> -->
+          <!-- Buttons to open panels -->
+          <!-- <f7-row>
+            <f7-col>
+              <f7-button panel-open="left">Left Panel</f7-button>
+            </f7-col>
+            <f7-col>
+              <f7-button panel-open="right">Right Panel</f7-button>
+            </f7-col>
+          </f7-row> -->
+          <!-- Button to open popup -->
+          <!-- <f7-button popup-open="#my-popup">Open Popup</f7-button> -->
+        </f7-page>
+      </f7-view>
+
+      <!-- Popup. All modals should be outside of Views -->
+      <f7-popup id="action-popup">
+        <f7-block v-if="form_type === 'add'">
+          <f7-block-title>添加新活动</f7-block-title>
+          <form id="action-form" :action="api_host + '/api/action/add'" method="POST" v-on:submit.prevent="submitOneAction">
+            <input type="hidden" name="user_id" :value="user_id">
+            <f7-list class="inline-labels no-hairlines-md">
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">项目</div>
+                <div class="item-input-wrap">
+                  <select name="item_id" placeholder="活动项目" required validate>
+                    <option disabled selected></option>
+                    <option v-for="item in $store.state.items" :value="item.id">{{ item.name }}</option>
+                  </select>
+                </div>
+              </f7-list-item>
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">日期</div>
+                <div class="item-input-wrap">
+                  <input type="date" name="date" required validate>
+                  <!-- <span class="input-clear-button"></span> -->
+                </div>
+              </f7-list-item>
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">完成度</div>
+                <div class="item-input-wrap">
+                  <input type="text" name="completion" placeholder="完成次数" required validate pattern="[0-9]+" data-error-message="只能输入数字。">
+                  <span class="input-clear-button"></span>
+                </div>
+              </f7-list-item>
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">备注</div>
+                <div class="item-input-wrap">
+                  <input type="text" name="remark" placeholder="活动备注信息">
+                  <span class="input-clear-button"></span>
+                </div>
+              </f7-list-item>
+            </ul>
+            <div class="block row">
+              <div class="col"><input type="submit" class="button button-fill button-round"></div>
+              <div class="col"><a class="button button-fill button-round popup-close" href="#">取消</a></div>
+            </div>
+          </form>
+        </f7-block>
+        <f7-block v-else>
+          <f7-block-title>修改活动</f7-block-title>
+          <form id="action-update-form" :action="api_host + '/api/action/update'" method="POST" v-on:submit.prevent="submitOneAction">
+            <input type="hidden" name="id" :value="form_content.id">
+            <input type="hidden" name="user_id" :value="form_content.user_id">
+            <f7-list class="inline-labels no-hairlines-md">
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">项目</div>
+                <div class="item-input-wrap">
+                  <select name="item_id" :value="form_content.item_id" required validate>
+                    <option disabled selected></option>
+                    <option v-for="item in $store.state.items" :value="item.id">{{ item.name }}</option>
+                  </select>
+                </div>
+              </f7-list-item>
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">日期</div>
+                <div class="item-input-wrap">
+                  <input type="date" name="date" :value="form_content.date" required validate>
+                  <!-- <span class="input-clear-button"></span> -->
+                </div>
+              </f7-list-item>
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">完成度</div>
+                <div class="item-input-wrap">
+                  <input type="text" name="completion" placeholder="完成次数" :value="form_content.completion" required validate pattern="[0-9]+" data-error-message="只能输入数字。">
+                  <span class="input-clear-button"></span>
+                </div>
+              </f7-list-item>
+              <f7-list-item class="item-input">
+                <div class="item-title item-label">备注</div>
+                <div class="item-input-wrap">
+                  <input type="text" name="remark" placeholder="活动备注信息" :value="form_content.remark">
+                  <span class="input-clear-button"></span>
+                </div>
+              </f7-list-item>
+            </f7-list>
+            <div class="block row">
+              <div class="col"><input type="submit" class="button button-fill button-round"></div>
+              <div class="col"><a class="button button-fill button-round popup-close" href="#">取消</a></div>
+            </div>
+          </form>
+        </f7-block>
+      </f7-popup>
+
+    </div>
+    <!-- built files will be auto injected -->
+    <!-- Path to Framework7 Library JS-->
+    <!-- <script type="text/javascript" src="static/js/framework7.min.js"></script> -->
+    <!-- Path to Framework7 Vue Plugin -->
+    <!-- <script type="text/javascript" src="static/js/framework7-vue.min.js"></script> -->
+  </body>
+</html>
