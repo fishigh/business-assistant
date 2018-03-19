@@ -8,11 +8,12 @@ import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
 import Framework7Vue from 'framework7-vue/dist/framework7-vue.esm.bundle.js'
 // import Dom7 from 'dom7/dist/dom7.min.js'
 // Import jquery
-import $ from 'jquery'
+// import $ from 'jquery'
 // Import User Components
 import YcItem from '@/components/Item'
 import YcUser from '@/components/User'
 import WasteBook from '@/components/WasteBook'
+import DigitalManagement from '@/components/DigitalManagement'
 
 Vue.config.productionTip = false
 
@@ -22,9 +23,12 @@ Vue.use(Framework7Vue, Framework7)
 // var $$ = Dom7
 
 Vue.component('waste-book', WasteBook)
+Vue.component('digital-management', DigitalManagement)
 
 const store = new Vuex.Store({
   state: {
+    user: '沈丹萍',
+    user_id: 1,
     items: [],
     id_item_mapping: {},
     users: [],
@@ -70,8 +74,8 @@ var params = {
   api_host: host,
   today: dateFormat(new Date()),
   view_date: dateFormat(new Date()),
-  user: '沈丹萍',
-  user_id: 1,
+  // user: '沈丹萍',
+  // user_id: 1,
   action_dates: [],
   actions: [],
   form_type: 'add',
@@ -113,45 +117,45 @@ new Vue({
         // alert('init')
         loadGlobal()
 
-        refreshManageData(new Date(params.today))
+        // refreshManageData(new Date(params.today))
       }
     }
     // ...
   },
   // App root methods
   methods: {
-    submitOneAction: function (e) {
-      var form = $(e.target)
-      $.post(form.attr('action'), form.serialize())
-        .done(function (data, textStatus) {
-          var app = new Framework7()
-          app.popup.close('#action-popup')
-          refreshManageData()
-        })
-        .fail(function (xhr, textStatus) {
-          alert('行动添加失败： ' + xhr.responseText)
-        })
-    },
-    deleteOneAction: function (e) {
-      $.post(host + '/api/action/delete', {id: $(e.currentTarget).attr('db-id')})
-        .done(function (data, textStatus) {
-          refreshManageData()
-        })
-        .fail(function (xhr, textStatus) {
-          alert('行动删除失败：' + xhr.responseText)
-        })
+    // submitOneAction: function (e) {
+    //   var form = $(e.target)
+    //   $.post(form.attr('action'), form.serialize())
+    //     .done(function (data, textStatus) {
+    //       var app = new Framework7()
+    //       app.popup.close('#action-popup')
+    //       refreshManageData()
+    //     })
+    //     .fail(function (xhr, textStatus) {
+    //       alert('行动添加失败： ' + xhr.responseText)
+    //     })
+    // },
+    // deleteOneAction: function (e) {
+    //   $.post(host + '/api/action/delete', {id: $(e.currentTarget).attr('db-id')})
+    //     .done(function (data, textStatus) {
+    //       refreshManageData()
+    //     })
+    //     .fail(function (xhr, textStatus) {
+    //       alert('行动删除失败：' + xhr.responseText)
+    //     })
     // },
     // fillAction: function(data) {
     //   alert(JSON.stringify(data))
     //   params.form_type = 'update'
     //   new Framework7().form.fillFromData('#action-update-form', data);
-    }
+    // }
   },
   watch: {
-    view_date: function (newDate, oldDate) {
-      console.log('old: ' + oldDate + ', new: ' + newDate)
-      refreshManageData(new Date(newDate))
-    }
+    // view_date: function (newDate, oldDate) {
+    //   console.log('old: ' + oldDate + ', new: ' + newDate)
+    //   refreshManageData(new Date(newDate))
+    // }
   }
 })
 
@@ -182,40 +186,40 @@ function loadGlobal () {
   })
 }
 
-function refreshManageData (date) {
-  // var date = new Date()
-  console.log(date.getDay())
+// function refreshManageData (date) {
+//   // var date = new Date()
+//   console.log(date.getDay())
 
-  var start = new Date(date)
-  if (date.getDay() === 0) {
-    start.setDate(date.getDate() - 6)
-  } else {
-    start.setDate(date.getDate() - date.getDay() + 1)
-  }
+//   var start = new Date(date)
+//   if (date.getDay() === 0) {
+//     start.setDate(date.getDate() - 6)
+//   } else {
+//     start.setDate(date.getDate() - date.getDay() + 1)
+//   }
 
-  var end = new Date(date)
-  if (date.getDay() !== 0) {
-    end.setDate(date.getDate() + 7 - date.getDay())
-  }
+//   var end = new Date(date)
+//   if (date.getDay() !== 0) {
+//     end.setDate(date.getDate() + 7 - date.getDay())
+//   }
 
-  params.action_dates = []
-  for (var i = new Date(start); i <= end; i.setDate(i.getDate() + 1)) {
-    params.action_dates.push(dateFormat(i))
-  }
-  console.log(params.action_dates)
+//   params.action_dates = []
+//   for (var i = new Date(start); i <= end; i.setDate(i.getDate() + 1)) {
+//     params.action_dates.push(dateFormat(i))
+//   }
+//   console.log(params.action_dates)
 
-  console.log(dateFormat(start))
-  console.log(dateFormat(end))
-  Framework7.request.get(host + '/api/action/range', {
-    start: dateFormat(start),
-    end: dateFormat(end)
-  }, function (data) {
-    console.log(data)
-    var obj = JSON.parse(data)
-    params.actions = obj
-  })
-  // addActionOp()
-}
+//   console.log(dateFormat(start))
+//   console.log(dateFormat(end))
+//   Framework7.request.get(host + '/api/action/range', {
+//     start: dateFormat(start),
+//     end: dateFormat(end)
+//   }, function (data) {
+//     console.log(data)
+//     var obj = JSON.parse(data)
+//     params.actions = obj
+//   })
+//   // addActionOp()
+// }
 
 // function addActionOp () {
 //   var marc = 'action'

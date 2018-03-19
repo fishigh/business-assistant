@@ -23,7 +23,7 @@
               <i class="icon f7-icons ios-only">sort</i>
               <i class="icon material-icons md-only">sort</i>
             </a> -->
-            <a class="link icon-only popup-open" data-popup="#item-popup" v-on:click="form_type = 'add'">
+            <a class="link icon-only popup-open" data-popup="#item-popup" v-on:click="form_type = 'add'; form_content = {}">
               <i class="icon f7-icons ios-only">add</i>
               <i class="icon material-icons md-only">add</i>
             </a>
@@ -61,35 +61,11 @@
     </div>
 
     <f7-popup id="item-popup">
-      <f7-block v-if="form_type === 'add'">
-        <f7-block-title>添加事项</f7-block-title>
-        <form id="item-form" :action="api_host + '/api/item/add'" v-on:submit.prevent="submitOneItem($store, $event)">
-          <f7-list class="inline-labels no-hairlines-md">
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">事项</div>
-              <div class="item-input-wrap">
-                <input type="text" name="name" placeholder="事项名称" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">备注</div>
-              <div class="item-input-wrap">
-                <input type="text" name="remark" placeholder="事项备注信息">
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-          </f7-list>
-          <div class="block row">
-            <div class="col"><input type="submit" class="button button-fill button-round submit-item"></div>
-            <div class="col"><a class="button button-fill button-round popup-close" href="#">取消</a></div>
-          </div>
-        </form>
-      </f7-block>
-      <f7-block v-else>
-        <f7-block-title>修改事项</f7-block-title>
-        <form id="item-update-form" :action="api_host + '/api/item/update'" v-on:submit.prevent="submitOneItem($store, $event)">
-          <input type="hidden" name="id" :value="form_content.id">
+      <f7-block>
+        <f7-block-title v-if="form_type === 'add'">添加事项</f7-block-title>
+        <f7-block-title v-else>修改事项</f7-block-title>
+        <form id="item-update-form" :action="api_host + '/api/item/' + form_type" v-on:submit.prevent="submitOneItem($store, $event)">
+          <input v-if="form_type === 'update'" type="hidden" name="id" :value="form_content.id">
           <f7-list class="inline-labels no-hairlines-md">
             <f7-list-item class="item-input">
               <div class="item-title item-label">事项</div>

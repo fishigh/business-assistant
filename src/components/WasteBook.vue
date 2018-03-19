@@ -9,7 +9,7 @@
             <i class="icon f7-icons ios-only">sort</i>
             <i class="icon material-icons md-only">sort</i>
         </a> -->
-        <a class="link icon-only popup-open" data-popup="#record-popup" v-on:click="form_type = 'add'">
+        <a class="link icon-only popup-open" data-popup="#record-popup" v-on:click="form_type = 'add'; form_content = {}">
             <i class="icon f7-icons ios-only">add</i>
             <i class="icon material-icons md-only">add</i>
         </a>
@@ -66,110 +66,11 @@
     </div>
 
     <f7-popup id="record-popup" style="overflow: scroll;">
-      <f7-block v-if="form_type === 'add'">
-        <f7-block-title>记账</f7-block-title>
-        <form id="record-form" :action="api_host + '/api/wastebook/add'" v-on:submit.prevent="submitOneRecord(records, $event)">
-          <f7-list class="inline-labels no-hairlines-md">
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">日期</div>
-              <div class="item-input-wrap">
-                <input type="date" name="date" placeholder="交易日期" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">代理</div>
-              <div class="item-input-wrap">
-                <select name="seller_id" placeholder="代理姓名" required validate>
-                  <option disabled selected></option>
-                  <option v-for="user in $store.state.users" :key="user.id" :value="user.id">{{ user.name }}</option>
-                </select>
-                <!-- <span class="input-clear-button"></span> -->
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">客户</div>
-              <div class="item-input-wrap">
-                <select name="buyer_id" placeholder="客户姓名" required validate>
-                  <option disabled selected></option>
-                  <option v-for="user in $store.state.users" :key="user.id" :value="user.id">{{ user.name }}</option>
-                </select>
-                <!-- <span class="input-clear-button"></span> -->
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">消费项目</div>
-              <div class="item-input-wrap">
-                <select name="product_id" placeholder="消费项目" required validate>
-                  <option disabled selected></option>
-                  <option v-for="product in products" :key="product.id" :value="product.id">{{ product.name }}</option>
-                </select>
-                <!-- <span class="input-clear-button"></span> -->
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">进单价</div>
-              <div class="item-input-wrap">
-                <input type="number" name="in_price" placeholder="单价" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">出单价</div>
-              <div class="item-input-wrap">
-                <input type="number" name="out_price" placeholder="单价" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">出货量</div>
-              <div class="item-input-wrap">
-                <input type="number" name="quantity" placeholder="出货量" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">运费</div>
-              <div class="item-input-wrap">
-                <input type="number" name="carriage" placeholder="运费" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">运费支付方式</div>
-              <div class="item-input-wrap">
-                <input type="text" name="carriage_pay_type" placeholder="运费支付方式" required validate>
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">发货仓库</div>
-              <div class="item-input-wrap">
-                <select name="store_id" placeholder="发货仓库" required validate>
-                  <option disabled selected></option>
-                  <option v-for="store in stores" :key="store.id" :value="store.id">{{ store.name }}</option>
-                </select>
-                <!-- <span class="input-clear-button"></span> -->
-              </div>
-            </f7-list-item>
-            <f7-list-item class="item-input">
-              <div class="item-title item-label">备注</div>
-              <div class="item-input-wrap">
-                <input name="remark" placeholder="交易备注">
-                <span class="input-clear-button"></span>
-              </div>
-            </f7-list-item>
-          </f7-list>
-          <div class="block row">
-            <div class="col"><input type="submit" class="button button-fill button-round"></div>
-            <div class="col"><a class="button button-fill button-round popup-close" href="#">取消</a></div>
-          </div>
-        </form>
-      </f7-block>
-      <f7-block v-else>
-        <f7-block-title>记账</f7-block-title>
-        <form id="record-form" :action="api_host + '/api/wastebook/update'" v-on:submit.prevent="submitOneRecord(records, $event)">
-          <input type="hidden" name="id" :value="form_content.id">
+      <f7-block>
+        <f7-block-title v-if="form_type === 'add'">记账</f7-block-title>
+        <f7-block-title v-else>改账</f7-block-title>
+        <form id="record-form" :action="api_host + '/api/wastebook/' + form_type" v-on:submit.prevent="submitOneRecord(records, $event)">
+          <input v-if="form_type === 'update'" type="hidden" name="id" :value="form_content.id">
           <f7-list class="inline-labels no-hairlines-md">
             <f7-list-item class="item-input">
               <div class="item-title item-label">日期</div>
