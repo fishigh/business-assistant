@@ -96,12 +96,13 @@
 import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
 import $ from 'jquery'
 
-var host = 'http://127.0.0.1:8080'
+// var host = 'http://10.0.0.8:8080'
+var host = process.env.API_HOST
 
 export default {
   name: 'YcItem',
   // props: ['items', 'user'],
-  data () {
+  data: function () {
     return {
       api_host: host,
       form_type: 'add',

@@ -10,11 +10,13 @@ import Framework7Vue from 'framework7-vue/dist/framework7-vue.esm.bundle.js'
 // Import jquery
 // import $ from 'jquery'
 // Import User Components
+import YcLogin from '@/components/Login'
 import YcItem from '@/components/Item'
 import YcUser from '@/components/User'
 import WasteBook from '@/components/WasteBook'
 import DigitalManagement from '@/components/DigitalManagement'
 
+console.log(process.env.API_HOST)
 Vue.config.productionTip = false
 
 Vue.use(Vuex)
@@ -27,6 +29,7 @@ Vue.component('digital-management', DigitalManagement)
 
 const store = new Vuex.Store({
   state: {
+    api_host: '',
     user: '沈丹萍',
     user_id: 1,
     items: [],
@@ -68,7 +71,8 @@ const store = new Vuex.Store({
 //   routes // （缩写）相当于 routes: routes
 // })
 
-var host = 'http://127.0.0.1:8080'
+// var host = 'http://10.0.0.8:8080'
+var host = process.env.API_HOST
 
 var params = {
   api_host: host,
@@ -110,7 +114,10 @@ new Vue({
     id: 'com.yyt.yc',
     // Enable swipe panel
     panel: {
-      swipe: 'left'
+      swipe: 'left',
+      leftBreakpoint: 768,
+      rightBreakpoint: 1440,
+      swipeActiveArea: 30
     },
     on: {
       init: function () {

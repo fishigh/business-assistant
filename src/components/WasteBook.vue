@@ -157,7 +157,7 @@
             <f7-list-item class="item-input">
               <div class="item-title item-label">备注</div>
               <div class="item-input-wrap">
-                <input name="remark"  :value="form_content.remark" placeholder="交易备注">
+                <input type="text" name="remark" :value="form_content.remark" placeholder="交易备注">
                 <span class="input-clear-button"></span>
               </div>
             </f7-list-item>
@@ -176,7 +176,8 @@
 import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
 import $ from 'jquery'
 
-var host = 'http://127.0.0.1:8080'
+// var host = 'http://10.0.0.8:8080'
+var host = process.env.API_HOST
 
 export default {
   name: 'WasteBook',
