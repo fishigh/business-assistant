@@ -1,5 +1,5 @@
 <template>
-  <div class="page" data-name="user">
+  <div class="page" data-name="customer">
     <div class="navbar">
       <div class="navbar-inner">
         <div class="left">
@@ -23,14 +23,14 @@
               <i class="icon f7-icons ios-only">sort</i>
               <i class="icon material-icons md-only">sort</i>
             </a> -->
-            <a class="link icon-only popup-open" data-popup="#user-popup" v-on:click="form_type = 'add'; form_content = {}">
+            <a class="link icon-only popup-open" data-popup="#customer-popup" v-on:click="form_type = 'add'; form_content = {}">
               <i class="icon f7-icons ios-only">add</i>
               <i class="icon material-icons md-only">add</i>
             </a>
           </div>
         </div>
         <div class="card-content">
-          <table id="user-list" border="1" style="white-space: nowrap;">
+          <table id="customer-list" border="1" style="white-space: nowrap;">
             <thead>
               <tr>
                 <th class="label-cell" width="100">序号</th>
@@ -47,28 +47,28 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="user in $store.state.users" :key="user.id">
+              <tr v-for="customer in $store.state.customers" :key="customer.id">
                 <td>
-                  {{ user.id }}
-                  <a class="link icon-only popup-open" data-popup="#user-popup" v-on:click="form_type = 'update'; form_content = user">
+                  {{ customer.id }}
+                  <a class="link icon-only popup-open" data-popup="#customer-popup" v-on:click="form_type = 'update'; form_content = customer">
                     <i class="icon f7-icons ios-only">edit</i>
                     <i class="icon material-icons md-only">edit</i>
                   </a>
-                  <a :db-id="user.id" class="link icon-only" v-on:click="deleteOneUser($store, $event)">
+                  <a :db-id="customer.id" class="link icon-only" v-on:click="deleteOneCustomer($store, $event)">
                     <i class="icon f7-icons ios-only">delete</i>
                     <i class="icon material-icons md-only">delete</i>
                   </a>
                 </td>
-                <td>{{ user.name }}</td>
-                <td>{{ $store.state.id_level_mapping[user.level] }}</td>
-                <td>{{ user.gender }}</td>
-                <td>{{ user.birthday }}</td>
-                <td>{{ user.tel }}</td>
-                <td>{{ user.weixin }}</td>
-                <td>{{ user.qq }}</td>
-                <td>{{ user.addr }}</td>
-                <td>{{ user.fund }}</td>
-                <td>{{ user.remark }}</td>
+                <td>{{ customer.name }}</td>
+                <td>{{ $store.state.id_level_mapping[customer.level] }}</td>
+                <td>{{ customer.gender }}</td>
+                <td>{{ customer.birthday }}</td>
+                <td>{{ customer.tel }}</td>
+                <td>{{ customer.weixin }}</td>
+                <td>{{ customer.qq }}</td>
+                <td>{{ customer.addr }}</td>
+                <td>{{ customer.fund }}</td>
+                <td>{{ customer.remark }}</td>
               </tr>
             </tbody>
           </table>
@@ -76,11 +76,11 @@
       </div>
     </div>
 
-    <f7-popup id="user-popup" style="overflow: scroll;">
+    <f7-popup id="customer-popup" style="overflow: scroll;">
       <f7-block>
         <f7-block-title v-if="form_type === 'add'">添加客户</f7-block-title>
         <f7-block-title v-else>修改客户信息</f7-block-title>
-        <form id="user-update-form" :action="api_host + '/api/user/' + form_type" v-on:submit.prevent="submitOneUser($store, $event)">
+        <form id="customer-update-form" :action="api_host + '/api/customer/' + form_type" v-on:submit.prevent="submitOneCustomer($store, $event)">
           <input v-if="form_type === 'update'" type="hidden" name="id" :value="form_content.id">
           <f7-list class="inline-labels no-hairlines-md">
             <f7-list-item class="item-input">
@@ -171,7 +171,7 @@ import $ from 'jquery'
 var host = process.env.API_HOST
 
 export default {
-  name: 'YcUser',
+  name: 'YcCustomer',
   data: function () {
     return {
       api_host: host,
@@ -180,21 +180,35 @@ export default {
     }
   },
   methods: {
-    submitOneUser: function (store, e) {
+    submitOneCustomer: function (store, e) {
       var form = $(e.target)
       $.post(form.attr('action'), form.serialize())
+      // $.ajax(form.attr('action'), {
+      //   method: 'POST',
+      //   data: form.serialize(),
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
-          new Framework7().popup.close('#user-popup')
-          refreshUserData(store)
+          new Framework7().popup.close('#customer-popup')
+          refreshCustomerData(store)
         })
         .fail(function (xhr, textStatus) {
           alert('客户添加失败： ' + xhr.responseText)
         })
     },
-    deleteOneUser: function (store, e) {
-      $.post(host + '/api/user/delete', {id: $(e.currentTarget).attr('db-id')})
+    deleteOneCustomer: function (store, e) {
+      $.post(host + '/api/customer/delete', {id: $(e.currentTarget).attr('db-id')})
+      // $.ajax(host + '/api/customer/delete', {
+      //   method: 'POST',
+      //   data: {
+      //     id: $(e.currentTarget).attr('db-id')
+      //   },
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
-          refreshUserData(store)
+          refreshCustomerData(store)
         })
         .fail(function (xhr, textStatus) {
           alert('客户删除失败：' + xhr.responseText)
@@ -203,11 +217,17 @@ export default {
   }
 }
 
-function refreshUserData (store) {
-  Framework7.request.get(host + '/api/user/list', function (data) {
-    var obj = JSON.parse(data)
-    console.log(obj[0])
-    store.commit('updateUsers', obj)
-  })
+function refreshCustomerData (store) {
+  $.get(host + '/api/customer/list')
+  // $.ajax(host + '/api/customer/list', {
+  //   method: 'GET',
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      var obj = JSON.parse(data)
+      console.log(obj[0])
+      store.commit('updateCustomers', obj)
+    })
 }
 </script>

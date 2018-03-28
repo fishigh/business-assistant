@@ -9,7 +9,8 @@ if ($method == 'init') {
                                     'name CHAR(128) UNIQUE KEY NOT NULL,' . 
                                     'remark TEXT,' .
                                     'create_time TIMESTAMP DEFAULT "0000-00-00 00:00:00",' .
-                                    'update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP) ENGINE=InnoDB');
+                                    'update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,' .
+                                    'UNIQUE KEY(name)) ENGINE=InnoDB');
     if ($ret) {
         print('success');
     } else {

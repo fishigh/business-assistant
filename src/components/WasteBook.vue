@@ -49,15 +49,15 @@
                 </a>
             </td>
             <td>{{ record.date }}</td>
-            <td>{{ $store.state.id_user_mapping[record.seller_id] }}</td>
-            <td>{{ $store.state.id_user_mapping[record.buyer_id] }}</td>
+            <td>{{ $store.state.id_customer_mapping[record.seller_id] }}</td>
+            <td>{{ $store.state.id_customer_mapping[record.buyer_id] }}</td>
             <td>{{ id_product_mapping[record.product_id] }}</td>
             <td>{{ record.in_price }}</td>
             <td>{{ record.out_price }}</td>
             <td>{{ record.quantity }}</td>
             <td>{{ record.carriage }}</td>
             <td>{{ record.carriage_pay_type }}</td>
-            <td>{{ record.income }}</td>
+            <td>{{ (record.out_price - record.in_price) * record.quantity }}</td>
             <td>{{ id_store_mapping[record.store_id] }}</td>
             <td>{{ record.remark }}</td>
             </tr>
@@ -84,7 +84,7 @@
               <div class="item-input-wrap">
                 <select name="seller_id" placeholder="代理姓名" :value="form_content.seller_id" required validate>
                   <option disabled selected></option>
-                  <option v-for="user in $store.state.users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                  <option v-for="customer in $store.state.customers" :key="customer.id" :value="customer.id">{{ customer.name }}</option>
                 </select>
                 <!-- <span class="input-clear-button"></span> -->
               </div>
@@ -94,7 +94,7 @@
               <div class="item-input-wrap">
                 <select name="buyer_id" placeholder="客户姓名" :value="form_content.buyer_id" required validate>
                   <option disabled selected></option>
-                  <option v-for="user in $store.state.users" :key="user.id" :value="user.id">{{ user.name }}</option>
+                  <option v-for="customer in $store.state.customers" :key="customer.id" :value="customer.id">{{ customer.name }}</option>
                 </select>
                 <!-- <span class="input-clear-button"></span> -->
               </div>
@@ -249,6 +249,12 @@ export default {
     submitOneRecord: function (records, e) {
       var form = $(e.target)
       $.post(form.attr('action'), form.serialize())
+      // $.ajax(form.attr('action'), {
+      //   method: 'POST',
+      //   data: form.serialize(),
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
           new Framework7().popup.close('#record-popup')
           refreshRecordData(records)
@@ -259,6 +265,14 @@ export default {
     },
     deleteOneRecord: function (records, e) {
       $.post(host + '/api/wastebook/delete', {id: $(e.currentTarget).attr('db-id')})
+      // $.ajax(host + '/api/wastebook/delete', {
+      //   method: 'POST',
+      //   data: {
+      //     id: $(e.currentTarget).attr('db-id')
+      //   },
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
           refreshRecordData(records)
         })
@@ -270,15 +284,21 @@ export default {
 }
 
 function refreshRecordData (records) {
-  Framework7.request.get(host + '/api/wastebook/list', function (data) {
-    var obj = JSON.parse(data)
-    console.log(obj[0])
-    records.splice(0)
-    for (var i in obj) {
-      records.push(obj[i])
-    }
-    // records = obj
-    // store.commit('updateUsers', obj)
-  })
+  $.get(host + '/api/wastebook/list')
+  // $.ajax(host + '/api/wastebook/list', {
+  //   method: 'GET',
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      var obj = JSON.parse(data)
+      console.log(obj[0])
+      records.splice(0)
+      for (var i in obj) {
+        records.push(obj[i])
+      }
+      // records = obj
+      // store.commit('updateUsers', obj)
+    })
 }
 </script>

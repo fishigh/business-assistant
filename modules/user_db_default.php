@@ -8,7 +8,9 @@ if ($method == 'add') {
 
     // $mysqli = new mysqli('127.0.0.1', 'root', 'yugao', 'test');
     // $mysqli = new mysqli('sqld-gz.bcehost.com', '44b0554ea4ac464d982fae44701edada', '87cb138aa4b34048bb3926d2a2e77a7d', 'iUlzHcjHFWqoQejMMBSz', 3306);
-    $ret = mysqli_query($mysqli, 'INSERT INTO ' . $table . ' (' . $columns . ', create_time) VALUES ("' .  $values . '", NOW())');
+    $ret = mysqli_query($mysqli, 'INSERT INTO ' . $table . 
+                                 ' (user_id, ' . $columns . ', create_time) VALUES ("' .
+                                 $_SESSION['user_id'] . '", "' .  $values . '", NOW())');
     if ($ret) {
         print('success');
     } else {
@@ -19,7 +21,8 @@ if ($method == 'add') {
     // $mysqli = new mysqli('127.0.0.1', 'root', 'yugao', 'test');
 	// $mysqli = new mysqli('sqld-gz.bcehost.com', '44b0554ea4ac464d982fae44701edada', '87cb138aa4b34048bb3926d2a2e77a7d', 'iUlzHcjHFWqoQejMMBSz', 3306);
 	// var_export($mysqli);
-    $result = mysqli_query($mysqli, 'SELECT * FROM ' . $table);
+    $result = mysqli_query($mysqli, 'SELECT * FROM ' . $table .
+                                    ' WHERE user_id = "' . $_SESSION['user_id'] . '"');
     if ($result) {
         $items = array();
         while ($row = $result->fetch_assoc()) {

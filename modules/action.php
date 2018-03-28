@@ -1,6 +1,6 @@
 <?php
 
-header('Access-Control-Allow-Origin: *');
+// header('Access-Control-Allow-Origin: *');
 $table = 'action';
 if ($method == 'init') {
     // $mysqli = new mysqli('127.0.0.1', 'root', 'yugao', 'test');
@@ -25,7 +25,9 @@ if ($method == 'init') {
     // $mysqli = new mysqli('127.0.0.1', 'root', 'yugao', 'test');
     // $mysqli = new mysqli('sqld-gz.bcehost.com', '44b0554ea4ac464d982fae44701edada', '87cb138aa4b34048bb3926d2a2e77a7d', 'iUlzHcjHFWqoQejMMBSz', 3306);
     $result = mysqli_query($mysqli, 'SELECT * FROM ' . $table . 
-                                    ' WHERE date BETWEEN "' . $_REQUEST['start'] . '" AND "' . $_REQUEST['end'] . '"');
+                                    ' WHERE user_id = "' . $_SESSION['user_id'] .
+                                    '" AND date BETWEEN "' . $_REQUEST['start'] .
+                                    '" AND "' . $_REQUEST['end'] . '"');
     if ($result) {
         $items = array();
         while ($row = $result->fetch_assoc()) {
@@ -38,5 +40,5 @@ if ($method == 'init') {
         print(mysqli_error($mysqli));
     }
 } else {
-    include('db_default.php');
+    include('user_db_default.php');
 }

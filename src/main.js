@@ -8,11 +8,11 @@ import Framework7 from 'framework7/dist/framework7.esm.bundle.js'
 import Framework7Vue from 'framework7-vue/dist/framework7-vue.esm.bundle.js'
 // import Dom7 from 'dom7/dist/dom7.min.js'
 // Import jquery
-// import $ from 'jquery'
+import $ from 'jquery'
 // Import User Components
 import YcLogin from '@/components/Login'
 import YcItem from '@/components/Item'
-import YcUser from '@/components/User'
+import YcCustomer from '@/components/Customer'
 import WasteBook from '@/components/WasteBook'
 import DigitalManagement from '@/components/DigitalManagement'
 
@@ -34,8 +34,8 @@ const store = new Vuex.Store({
     user_id: 1,
     items: [],
     id_item_mapping: {},
-    users: [],
-    id_user_mapping: {},
+    customers: [],
+    id_customer_mapping: {},
     id_level_mapping: {}
   },
   mutations: {
@@ -45,10 +45,10 @@ const store = new Vuex.Store({
         state.id_item_mapping[newone[i].id] = newone[i].name
       }
     },
-    updateUsers (state, newone) {
-      state.users = newone
+    updateCustomers (state, newone) {
+      state.customers = newone
       for (var i in newone) {
-        state.id_user_mapping[newone[i].id] = newone[i].name
+        state.id_customer_mapping[newone[i].id] = newone[i].name
       }
     },
     updateLevelMapping (state, newone) {
@@ -100,12 +100,16 @@ new Vue({
     // Array with app routes
     routes: [
       {
+        path: '/login/',
+        component: YcLogin
+      },
+      {
         path: '/item/',
         component: YcItem
       },
       {
-        path: '/user/',
-        component: YcUser
+        path: '/customer/',
+        component: YcCustomer
       }
     ],
     // App Name
@@ -122,15 +126,26 @@ new Vue({
     on: {
       init: function () {
         // alert('init')
-        loadGlobal()
-
+        // loadGlobal()
+        // this.router.navigate('/login/')
         // refreshManageData(new Date(params.today))
       }
     }
     // ...
   },
+  mounted: function () {
+    // console.log('mounted')
+    // console.log(this)
+    // this.$f7.views.main.router.navigate('/login/')
+    loadGlobal(this.$f7.views.main.router)
+  },
   // App root methods
   methods: {
+    // red: function (e) {
+    //   console.log(this)
+    //   console.log(this.framework7)
+    //   this.$options.framework7.router.navigate('/login/')
+    // }
     // submitOneAction: function (e) {
     //   var form = $(e.target)
     //   $.post(form.attr('action'), form.serialize())
@@ -173,24 +188,60 @@ function dateFormat (date) {
   return fmt
 }
 
-function loadGlobal () {
-  Framework7.request.get(host + '/api/item/list', function (data) {
-    var obj = JSON.parse(data)
-    console.log(obj[0])
-    store.commit('updateItems', obj)
-  })
+function loadGlobal (router) {
+  $.get(host + '/api/item/list')
+  // $.ajax(host + '/api/item/list', {
+  //   method: 'GET',
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      var obj = JSON.parse(data)
+      console.log(obj[0])
+      store.commit('updateItems', obj)
+    })
+    .fail(function (xhr, textStatus) {
+      console.log('GET ' + host + '/api/item/list fail: ' + xhr.responseText)
+      if (xhr.status === 401) {
+        router.navigate('/login/')
+      }
+    })
 
-  Framework7.request.get(host + '/api/user/list', function (data) {
-    var obj = JSON.parse(data)
-    console.log(obj[0])
-    store.commit('updateUsers', obj)
-  })
+  $.get(host + '/api/customer/list')
+  // $.ajax(host + '/api/customer/list', {
+  //   method: 'GET',
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      var obj = JSON.parse(data)
+      console.log(obj[0])
+      store.commit('updateCustomers', obj)
+    })
+    .fail(function (xhr, textStatus) {
+      console.log('GET ' + host + '/api/customer/list fail: ' + xhr.responseText)
+      if (xhr.status === 401) {
+        router.navigate('/login/')
+      }
+    })
 
-  Framework7.request.get(host + '/api/level/list', function (data) {
-    var obj = JSON.parse(data)
-    console.log(obj[0])
-    store.commit('updateLevelMapping', obj)
-  })
+  $.get(host + '/api/level/list')
+  // $.ajax(host + '/api/level/list', {
+  //   method: 'GET',
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      var obj = JSON.parse(data)
+      console.log(obj[0])
+      store.commit('updateLevelMapping', obj)
+    })
+    .fail(function (xhr, textStatus) {
+      console.log('GET ' + host + '/api/level/list fail: ' + xhr.responseText)
+      if (xhr.status === 401) {
+        router.navigate('/login/')
+      }
+    })
 }
 
 // function refreshManageData (date) {

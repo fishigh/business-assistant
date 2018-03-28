@@ -120,6 +120,12 @@ export default {
     submitOneItem: function (store, e) {
       var form = $(e.target)
       $.post(form.attr('action'), form.serialize())
+      // $.ajax(form.attr('action'), {
+      //   method: 'POST',
+      //   data: form.serialize(),
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
           new Framework7().popup.close('#item-popup')
           refreshItemData(store)
@@ -130,6 +136,14 @@ export default {
     },
     deleteOneItem: function (store, e) {
       $.post(host + '/api/item/delete', {id: $(e.currentTarget).attr('db-id')})
+      // $.ajax(host + '/api/item/delete', {
+      //   method: 'POST',
+      //   data: {
+      //     id: $(e.currentTarget).attr('db-id')
+      //   },
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
           refreshItemData(store)
         })
@@ -141,10 +155,16 @@ export default {
 }
 
 function refreshItemData (store) {
-  Framework7.request.get(host + '/api/item/list', function (data) {
-    var obj = JSON.parse(data)
-    console.log(obj[0])
-    store.commit('updateItems', obj)
-  })
+  $.get(host + '/api/item/list')
+  // $.ajax(host + '/api/item/list', {
+  //   method: 'GET',
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      var obj = JSON.parse(data)
+      console.log(obj[0])
+      store.commit('updateItems', obj)
+    })
 }
 </script>

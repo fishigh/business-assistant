@@ -63,8 +63,8 @@
         <f7-block-title v-else>修改活动</f7-block-title>
         <form id="action-update-form" :action="api_host + '/api/action/' + form_type" method="POST" v-on:submit.prevent="submitOneAction">
           <input v-if="form_type === 'update'" type="hidden" name="id" :value="form_content.id">
-          <input v-if="form_type === 'update'" type="hidden" name="user_id" :value="form_content.user_id">
-          <input v-else type="hidden" name="user_id" :value="$store.state.user_id">
+          <!-- <input v-if="form_type === 'update'" type="hidden" name="user_id" :value="form_content.user_id"> -->
+          <!-- <input v-else type="hidden" name="user_id" :value="$store.state.user_id"> -->
           <f7-list class="inline-labels no-hairlines-md">
             <f7-list-item class="item-input">
               <div class="item-title item-label">项目</div>
@@ -139,6 +139,12 @@ export default {
       var actionDates = this.action_dates
       var actions = this.actions
       $.post(form.attr('action'), form.serialize())
+      // $.ajax(form.attr('action'), {
+      //   method: 'POST',
+      //   data: form.serialize(),
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
           var app = new Framework7()
           app.popup.close('#action-popup')
@@ -155,6 +161,14 @@ export default {
       var actionDates = this.action_dates
       var actions = this.actions
       $.post(host + '/api/action/delete', {id: $(e.currentTarget).attr('db-id')})
+      // $.ajax(host + '/api/action/delete', {
+      //   method: 'POST',
+      //   data: {
+      //     id: $(e.currentTarget).attr('db-id')
+      //   },
+      //   xhrFields: { withCredentials: true },
+      //   // crossDomain: true
+      // })
         .done(function (data, textStatus) {
           refreshActionData(new Date(viewDate), actionDates, actions)
         })
@@ -195,19 +209,29 @@ function refreshActionData (date, actionDates, actions) {
 
   console.log(dateFormat(start))
   console.log(dateFormat(end))
-  Framework7.request.get(host + '/api/action/range', {
+  $.get(host + '/api/action/range', {
     start: dateFormat(start),
     end: dateFormat(end)
-  }, function (data) {
-    console.log(data)
-    var obj = JSON.parse(data)
-    for (i in actions) {
-      Vue.delete(actions, i)
-    }
-    for (i in obj) {
-      Vue.set(actions, i, obj[i])
-    }
   })
+  // $.ajax(host + '/api/action/range', {
+  //   method: 'GET',
+  //   data: {
+  //     start: dateFormat(start),
+  //     end: dateFormat(end)
+  //   },
+  //   xhrFields: { withCredentials: true },
+  //   // crossDomain: true
+  // })
+    .done(function (data, textStatus) {
+      console.log(data)
+      var obj = JSON.parse(data)
+      for (i in actions) {
+        Vue.delete(actions, i)
+      }
+      for (i in obj) {
+        Vue.set(actions, i, obj[i])
+      }
+    })
 }
 
 function dateFormat (date) {
