@@ -9,11 +9,26 @@ if ($method == 'init') {
                                     'user_id INT NOT NULL,' .
                                     'name CHAR(128) NOT NULL,' .
                                     'remark TEXT,' .
+                                    'sequence INT UNSIGNED,' .
                                     'create_time TIMESTAMP DEFAULT "0000-00-00 00:00:00",' .
                                     'update_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                     UNIQUE KEY (user_id, name)) ENGINE=InnoDB');
     if ($ret) {
         print('success');
+    } else {
+        header('HTTP/1.1 400');
+        print(mysqli_error($mysqli));
+    }
+} else if ($method == 'list') {
+    $result = mysqli_query($mysqli, 'SELECT * FROM ' . $table .
+                                    ' WHERE user_id = "' . $_SESSION['user_id'] . '" ORDER BY -sequence DESC, id ASC');
+    if ($result) {
+        $items = array();
+        while ($row = $result->fetch_assoc()) {
+            $items[] = $row;
+        }
+        $result->close();
+        print json_encode($items);
     } else {
         header('HTTP/1.1 400');
         print(mysqli_error($mysqli));

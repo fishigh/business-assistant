@@ -19,8 +19,8 @@ if ($method == 'add') {
     }
 } else if ($method == 'list') {
     // $mysqli = new mysqli('127.0.0.1', 'root', 'yugao', 'test');
-	// $mysqli = new mysqli('sqld-gz.bcehost.com', '44b0554ea4ac464d982fae44701edada', '87cb138aa4b34048bb3926d2a2e77a7d', 'iUlzHcjHFWqoQejMMBSz', 3306);
-	// var_export($mysqli);
+    // $mysqli = new mysqli('sqld-gz.bcehost.com', '44b0554ea4ac464d982fae44701edada', '87cb138aa4b34048bb3926d2a2e77a7d', 'iUlzHcjHFWqoQejMMBSz', 3306);
+    // var_export($mysqli);
     $result = mysqli_query($mysqli, 'SELECT * FROM ' . $table .
                                     ' WHERE user_id = "' . $_SESSION['user_id'] . '"');
     if ($result) {
