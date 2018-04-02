@@ -16,6 +16,8 @@ import YcCustomer from '@/components/Customer'
 import WasteBook from '@/components/WasteBook'
 import DigitalManagement from '@/components/DigitalManagement'
 
+import {dateFormat} from './yc.common.js'
+
 console.log(process.env.API_HOST)
 Vue.config.productionTip = false
 
@@ -181,12 +183,12 @@ new Vue({
   }
 })
 
-function dateFormat (date) {
-  var fmt = date.getFullYear() + '-'
-  fmt += ('0' + (date.getMonth() + 1)).substr(-2) + '-'
-  fmt += ('0' + date.getDate()).substr(-2)
-  return fmt
-}
+// function dateFormat (date) {
+//   var fmt = date.getFullYear() + '-'
+//   fmt += ('0' + (date.getMonth() + 1)).substr(-2) + '-'
+//   fmt += ('0' + date.getDate()).substr(-2)
+//   return fmt
+// }
 
 function loadGlobal (router) {
   $.get(host + '/api/item/list')
